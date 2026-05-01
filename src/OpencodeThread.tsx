@@ -1,38 +1,49 @@
 import type { PropsWithChildren } from "react";
+import { AssistantMessage, Thread } from "@assistant-ui/react-ui";
 import { MessagePrimitive } from "@assistant-ui/react";
-import { Thread } from "@assistant-ui/react-ui";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { MarkdownText } from "@/components/assistant-ui/markdown-text";
 import { ToolFallback } from "@/components/assistant-ui/tool-fallback";
 import { ToolGroup } from "@/components/assistant-ui/tool-group";
 import { Reasoning } from "@/components/assistant-ui/reasoning";
 import { openCodeToolsByName, groupContextTools } from "./tools";
+import { DockedComposer } from "./DockedComposer";
 
 export function OpencodeThread() {
   return (
-    <Thread
-      components={{
-        AssistantMessage: GroupedAssistantMessage,
-      }}
-    />
+    <TooltipProvider>
+      <Thread
+        components={{
+          AssistantMessage: OpencodeAssistantMessage,
+          Composer: DockedComposer,
+        }}
+      />
+    </TooltipProvider>
   );
 }
 
-function GroupedAssistantMessage() {
+// Keep react-ui's chrome (Root wrapper, Avatar) and replace ONLY the inner
+// parts renderer with Unstable_PartsGrouped so we can coalesce context tools
+// and dispatch tool-calls through our by_name map.
+function OpencodeAssistantMessage() {
   return (
-    <MessagePrimitive.Root>
-      <MessagePrimitive.Unstable_PartsGrouped
-        groupingFunction={groupContextTools}
-        components={{
-          Text: MarkdownText,
-          Reasoning,
-          tools: {
-            by_name: openCodeToolsByName,
-            Fallback: ToolFallback,
-          },
-          Group: ContextGroup,
-        }}
-      />
-    </MessagePrimitive.Root>
+    <AssistantMessage.Root>
+      <AssistantMessage.Avatar />
+      <div className="aui-assistant-message-content">
+        <MessagePrimitive.Unstable_PartsGrouped
+          groupingFunction={groupContextTools}
+          components={{
+            Text: MarkdownText,
+            Reasoning,
+            tools: {
+              by_name: openCodeToolsByName,
+              Fallback: ToolFallback,
+            },
+            Group: ContextGroup,
+          }}
+        />
+      </div>
+    </AssistantMessage.Root>
   );
 }
 
