@@ -1,6 +1,5 @@
 @import "@assistant-ui/react-ui/styles/index.css";
 @import "@assistant-ui/react-ui/styles/markdown.css";
-@import "tw-shimmer";
 
 @tailwind base;
 @tailwind components;
@@ -11,4 +10,44 @@ body,
 #root {
   height: 100%;
   margin: 0;
+}
+
+@layer utilities {
+  .shimmer {
+    background-image: linear-gradient(
+      90deg,
+      currentColor 0%,
+      currentColor 40%,
+      rgba(0, 0, 0, 0.2) 50%,
+      currentColor 60%,
+      currentColor 100%
+    );
+    background-size: 200% 100%;
+    background-repeat: no-repeat;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: aui-shimmer 2.2s linear infinite;
+  }
+  @media (prefers-color-scheme: dark) {
+    .shimmer {
+      background-image: linear-gradient(
+        90deg,
+        currentColor 0%,
+        currentColor 40%,
+        rgba(255, 255, 255, 0.6) 50%,
+        currentColor 60%,
+        currentColor 100%
+      );
+    }
+  }
+}
+
+@keyframes aui-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
