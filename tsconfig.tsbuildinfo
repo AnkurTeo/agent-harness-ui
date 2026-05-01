@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/layout.tsx","./src/myruntimeprovider.tsx","./src/permissionprompt.tsx","./src/questionprompt.tsx","./src/sessioninfo.tsx","./src/main.tsx","./src/vite-env.d.ts"],"version":"5.9.3"}
