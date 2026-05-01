@@ -1,6 +1,7 @@
 import { Composer } from "@assistant-ui/react-ui";
 import { AgentToggle } from "./AgentToggle";
 import { ErrorBanner } from "./ErrorBanner";
+import { ModelToggle } from "./ModelToggle";
 import { PermissionPrompt } from "./PermissionPrompt";
 import { QuestionPrompt } from "./QuestionPrompt";
 
@@ -11,7 +12,8 @@ export function DockedComposer() {
       <QuestionPrompt />
       <PermissionPrompt />
       <Composer />
-      <div className="flex items-center justify-end gap-2 pb-1">
+      <div className="flex flex-wrap items-center justify-end gap-4 pb-1">
+        <ModelToggle />
         <AgentToggle />
       </div>
     </div>
