@@ -32,6 +32,23 @@ body,
   padding-bottom: 1.5rem; /* was 1rem (pb-4)    */
 }
 
+/* Markdown theme — tighten to match OpenCode's prose density.
+   react-ui defaults bias toward marketing-site scale (h1=2.25rem, h2=1.875rem,
+   bold+tracking-tight). OpenCode uses a chat-native scale closer to the body
+   text. Override just the heading sizes/weights and list/paragraph spacing
+   so prose reads tight and scannable. */
+.aui-md-h1 { font-size: 1.25rem; line-height: 1.75rem; font-weight: 600; margin-top: 1.25rem; margin-bottom: 0.75rem; letter-spacing: 0; }
+.aui-md-h2 { font-size: 1.125rem; line-height: 1.625rem; font-weight: 600; margin-top: 1.25rem; margin-bottom: 0.5rem; letter-spacing: 0; }
+.aui-md-h3 { font-size: 1rem;     line-height: 1.5rem;   font-weight: 600; margin-top: 1rem;    margin-bottom: 0.5rem; }
+.aui-md-h4,
+.aui-md-h5,
+.aui-md-h6 { font-size: 0.95rem; line-height: 1.5rem; font-weight: 600; margin-top: 1rem; margin-bottom: 0.5rem; }
+.aui-md-p  { margin-top: 0; margin-bottom: 0.75rem; line-height: 1.55rem; }
+.aui-md-ul,
+.aui-md-ol { margin-top: 0.25rem; margin-bottom: 0.75rem; padding-left: 1.25rem; }
+.aui-md-li { margin-top: 0.125rem; margin-bottom: 0.125rem; line-height: 1.5rem; }
+.aui-md-blockquote { margin-top: 0.75rem; margin-bottom: 0.75rem; padding-left: 0.75rem; border-left: 2px solid hsl(var(--border, 0 0% 90%)); color: hsl(var(--muted-foreground, 0 0% 45%)); }
+
 @layer utilities {
   .shimmer {
     background-image: linear-gradient(

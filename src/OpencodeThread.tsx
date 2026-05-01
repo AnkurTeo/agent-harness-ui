@@ -12,12 +12,19 @@ import { ToolFallback } from "@/components/assistant-ui/tool-fallback";
 import { ToolGroup } from "@/components/assistant-ui/tool-group";
 import { Reasoning } from "@/components/assistant-ui/reasoning";
 import { openCodeToolsByName, groupContextTools } from "./tools";
+import { StepFinish, StepStart } from "./tools/StepBoundary";
 import { DockedComposer } from "./DockedComposer";
+import { InterruptedMarker } from "./InterruptedMarker";
 
 export function OpencodeThread() {
   return (
     <TooltipProvider>
       <Thread
+        strings={{
+          composer: {
+            input: { placeholder: "Ask anything..." },
+          },
+        }}
         components={{
           AssistantMessage: OpencodeAssistantMessage,
           Composer: DockedComposer,
@@ -44,10 +51,17 @@ function OpencodeAssistantMessage() {
               by_name: openCodeToolsByName,
               Fallback: ToolFallback,
             },
+            data: {
+              by_name: {
+                "opencode-step-start": StepStart,
+                "opencode-step-finish": StepFinish,
+              },
+            },
             Group: ContextGroup,
           }}
         />
       </div>
+      <InterruptedMarker />
       <BranchPicker />
       <AssistantActionBar />
     </AssistantMessage.Root>

@@ -1,6 +1,7 @@
 import { OpencodeThread } from "./OpencodeThread";
 import { ThreadList } from "@/components/assistant-ui/thread-list";
 import { SessionInfo } from "./SessionInfo";
+import { ThreadHeader } from "./ThreadHeader";
 
 export function Layout() {
   return (
@@ -13,8 +14,11 @@ export function Layout() {
           <ThreadList />
         </div>
       </aside>
-      <main className="min-h-0">
-        <OpencodeThread />
+      <main className="flex min-h-0 flex-col">
+        <ThreadHeader />
+        <div className="min-h-0 flex-1">
+          <OpencodeThread />
+        </div>
       </main>
     </div>
   );
