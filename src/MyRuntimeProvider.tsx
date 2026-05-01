@@ -46,7 +46,7 @@ function useServerConfig(): ServerConfig | null | undefined {
  * Resolve the default model for a given agent:
  *   1. config.agent[name].model (per-agent override)
  *   2. config.model (global default)
- *   3. undefined (caller will fall back to first provider/model if needed)
+ *   3. undefined
  */
 function resolveAgentModel(
   cfg: ServerConfig | null | undefined,
@@ -58,10 +58,17 @@ function resolveAgentModel(
   return resolved;
 }
 
+/**
+ * Remember the most-recently-active session id so a remount of the
+ * runtime (see KeyedRuntimeShell) can continue the same conversation
+ * instead of bootstrapping a fresh thread.
+ */
+function useActiveSessionRef() {
+  return useRef<string | undefined>(undefined);
+}
+
 export function MyRuntimeProvider({ children }: { children: ReactNode }) {
   const cfg = useServerConfig();
-  // Wait for the server-config probe to resolve before mounting the runtime.
-  // This avoids a flash where the first prompt goes out with the wrong agent.
   if (cfg === undefined) return null;
   const initialAgent = cfg?.default_agent ?? "plan";
   const initialModel = resolveAgentModel(cfg, initialAgent);
@@ -69,18 +76,43 @@ export function MyRuntimeProvider({ children }: { children: ReactNode }) {
     <AgentProvider initial={initialAgent}>
       <ModelProvider initial={initialModel}>
         <AgentModelSync cfg={cfg} />
-        <RuntimeShell>{children}</RuntimeShell>
+        <KeyedRuntimeShell>{children}</KeyedRuntimeShell>
       </ModelProvider>
     </AgentProvider>
   );
 }
 
 /**
+ * Key the RuntimeShell by (agent, model) so a change to either value
+ * forces a remount. Works around assistant-ui@0.12.28's
+ * `useRemoteThreadListRuntime` stabilizing `options.runtimeHook` via
+ * useCallback([]) — that freezes the closure `useOpenCodeRuntime`
+ * provides (with defaultAgent / defaultModel) at mount and prevents
+ * later updates from reaching the external-store adapter's `onNew`.
+ * Remounting rebuilds the closure with the current values.
+ *
+ * We preserve the active conversation across remounts via
+ * `activeSessionRef`, which is written whenever the runtime attaches
+ * to a session and read as `initialSessionId` on remount so the new
+ * runtime picks up the same thread instead of creating a new one.
+ */
+function KeyedRuntimeShell({ children }: { children: ReactNode }) {
+  const { agent } = useAgent();
+  const { model } = useModel();
+  const activeSessionRef = useActiveSessionRef();
+  const key = `${agent ?? "-"}::${model?.providerID ?? "-"}/${model?.modelID ?? "-"}`;
+  return (
+    <RuntimeShell key={key} activeSessionRef={activeSessionRef}>
+      {children}
+    </RuntimeShell>
+  );
+}
+
+/**
  * When the user flips the agent toggle, reset the model to that agent's
- * configured default (per-agent override, or global config.model). This
- * matches OpenCode's intent: per-agent model is "the default when this
- * agent is active." If the user subsequently picks a different model, that
- * stays in effect until they flip agents again.
+ * configured default. Matches OpenCode's "per-agent model is the default
+ * when this agent is active" semantic. A subsequent manual model pick
+ * stays sticky until the next agent change.
  */
 function AgentModelSync({ cfg }: { cfg: ServerConfig | null }) {
   const { agent } = useAgent();
@@ -95,7 +127,13 @@ function AgentModelSync({ cfg }: { cfg: ServerConfig | null }) {
   return null;
 }
 
-function RuntimeShell({ children }: { children: ReactNode }) {
+function RuntimeShell({
+  children,
+  activeSessionRef,
+}: {
+  children: ReactNode;
+  activeSessionRef: React.MutableRefObject<string | undefined>;
+}) {
   const { agent } = useAgent();
   const { model } = useModel();
   const runtime = useOpenCodeRuntime({
@@ -104,6 +142,7 @@ function RuntimeShell({ children }: { children: ReactNode }) {
     defaultModel: model
       ? { providerID: model.providerID, modelID: model.modelID }
       : undefined,
+    initialSessionId: activeSessionRef.current,
     onError: (error) => {
       console.error("[opencode-runtime] error:", error);
     },
@@ -115,8 +154,11 @@ function RuntimeShell({ children }: { children: ReactNode }) {
     bootstrapped.current = true;
     (async () => {
       try {
-        await runtime.threads.switchToNewThread();
-        await runtime.threads.mainItem.initialize();
+        // If we're not resuming a prior session, create + initialize a new one.
+        if (!activeSessionRef.current) {
+          await runtime.threads.switchToNewThread();
+          await runtime.threads.mainItem.initialize();
+        }
       } catch (err) {
         console.error(
           "[opencode-runtime] failed to create initial session:",
@@ -124,7 +166,16 @@ function RuntimeShell({ children }: { children: ReactNode }) {
         );
       }
     })();
-  }, [runtime]);
+  }, [runtime, activeSessionRef]);
+
+  // Track the active session id so the next remount resumes it.
+  useEffect(() => {
+    const unsub = runtime.threads.subscribe(() => {
+      const id = runtime.threads.mainItem.getState()?.remoteId;
+      if (id) activeSessionRef.current = id;
+    });
+    return unsub;
+  }, [runtime, activeSessionRef]);
 
   return (
     <AssistantRuntimeProvider runtime={runtime}>

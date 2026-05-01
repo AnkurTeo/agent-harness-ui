@@ -1,4 +1,3 @@
-import { useOpenCodeThreadState } from "@assistant-ui/react-opencode";
 import {
   Select,
   SelectContent,
@@ -9,17 +8,18 @@ import {
 import { useAgent } from "./AgentContext";
 import { useAgents } from "./hooks/useAgents";
 
+/**
+ * Agent picker for the composer footer.
+ *
+ * We deliberately do NOT disable during streaming — the selected agent is
+ * applied to the *next* prompt_async call, not the in-flight one, so the
+ * user should be free to flip anytime (e.g. click Build while Plan is
+ * mid-response, then send their follow-up on Build). Disabling the toggle
+ * blocks the exact UX the dropdown exists for.
+ */
 export function AgentToggle() {
   const { agents, status } = useAgents();
   const { agent, setAgent } = useAgent();
-  const isRunning = useOpenCodeThreadState(
-    (s) =>
-      s.runState.type === "streaming" ||
-      s.runState.type === "cancelling" ||
-      s.runState.type === "reverting" ||
-      s.sessionStatus?.type === "busy" ||
-      s.sessionStatus?.type === "retry",
-  );
 
   if (status === "loading" || agents.length === 0) return null;
 
@@ -32,7 +32,6 @@ export function AgentToggle() {
       <Select
         value={valueText || undefined}
         onValueChange={(next) => setAgent(next)}
-        disabled={isRunning}
       >
         <SelectTrigger className="h-7 w-28 text-xs capitalize">
           <SelectValue placeholder="Select agent">
