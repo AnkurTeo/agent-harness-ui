@@ -1,5 +1,10 @@
 import type { PropsWithChildren } from "react";
-import { AssistantMessage, Thread } from "@assistant-ui/react-ui";
+import {
+  AssistantActionBar,
+  AssistantMessage,
+  BranchPicker,
+  Thread,
+} from "@assistant-ui/react-ui";
 import { MessagePrimitive } from "@assistant-ui/react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { MarkdownText } from "@/components/assistant-ui/markdown-text";
@@ -43,6 +48,8 @@ function OpencodeAssistantMessage() {
           }}
         />
       </div>
+      <BranchPicker />
+      <AssistantActionBar />
     </AssistantMessage.Root>
   );
 }
