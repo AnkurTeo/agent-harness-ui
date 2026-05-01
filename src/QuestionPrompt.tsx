@@ -1,13 +1,23 @@
 import {
   useOpenCodeQuestions,
   useOpenCodeRuntimeExtras,
+  type OpenCodeQuestionRequest,
 } from "@assistant-ui/react-opencode";
 
 export function QuestionPrompt() {
   const questions = useOpenCodeQuestions();
-  const { replyToQuestion, rejectQuestion } = useOpenCodeRuntimeExtras();
 
   if (!questions.length) return null;
+
+  return <QuestionPromptInner questions={questions} />;
+}
+
+function QuestionPromptInner({
+  questions,
+}: {
+  questions: OpenCodeQuestionRequest[];
+}) {
+  const { replyToQuestion, rejectQuestion } = useOpenCodeRuntimeExtras();
 
   return (
     <div className="border-t bg-sky-50 p-3">
