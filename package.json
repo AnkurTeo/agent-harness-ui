@@ -15,7 +15,8 @@
     "@assistant-ui/react-ui": "^0.2.1",
     "@opencode-ai/sdk": "^1.14.20",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",
