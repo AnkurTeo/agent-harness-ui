@@ -3,6 +3,7 @@ import { BashTool } from "./BashTool";
 import { EditTool } from "./EditTool";
 import { TaskTool } from "./TaskTool";
 import { QuestionInlineTool } from "./QuestionInlineTool";
+import { PlanExitTool } from "./PlanExitTool";
 
 export const openCodeToolsByName: Record<string, ToolCallMessagePartComponent> = {
   bash: BashTool,
@@ -11,6 +12,8 @@ export const openCodeToolsByName: Record<string, ToolCallMessagePartComponent> =
   apply_patch: EditTool,
   task: TaskTool,
   question: QuestionInlineTool,
+  plan_exit: PlanExitTool,
+  plan_enter: PlanExitTool,
 };
 
 export { groupContextTools } from "./groupContextTools";
