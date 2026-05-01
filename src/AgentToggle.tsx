@@ -34,20 +34,19 @@ export function AgentToggle() {
         onValueChange={(next) => setAgent(next)}
         disabled={isRunning}
       >
-        <SelectTrigger className="h-7 w-36 text-xs capitalize">
-          <SelectValue placeholder="Select agent" />
+        <SelectTrigger className="h-7 w-28 text-xs capitalize">
+          <SelectValue placeholder="Select agent">
+            <span className="capitalize">{valueText}</span>
+          </SelectValue>
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="bg-white text-neutral-900 border-neutral-200 shadow-md">
           {agents.map((a) => (
-            <SelectItem key={a.name} value={a.name} className="capitalize">
-              <div className="flex flex-col">
-                <span>{a.name}</span>
-                {a.description && (
-                  <span className="text-muted-foreground text-[10px]">
-                    {a.description.slice(0, 80)}
-                  </span>
-                )}
-              </div>
+            <SelectItem
+              key={a.name}
+              value={a.name}
+              className="capitalize data-[highlighted]:bg-neutral-100"
+            >
+              {a.name}
             </SelectItem>
           ))}
         </SelectContent>
