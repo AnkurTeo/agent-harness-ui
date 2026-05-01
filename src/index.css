@@ -12,6 +12,26 @@ body,
   margin: 0;
 }
 
+/* Thread width + spacing overrides.
+   Defaults from @assistant-ui/react-ui:
+     --aui-thread-max-width: 42rem (672px)
+     .aui-thread-viewport:        px-4 pt-8
+     .aui-thread-viewport-footer: mt-3 pb-4
+   Overrides below widen the thread and loosen vertical/horizontal
+   rhythm to a "comfortable" density. */
+.aui-root {
+  --aui-thread-max-width: 56rem; /* was 42rem — "wide" */
+}
+.aui-thread-viewport {
+  padding-left: 1.5rem;   /* was 1rem (px-4)   */
+  padding-right: 1.5rem;
+  padding-top: 2.5rem;    /* was 2rem (pt-8)   */
+}
+.aui-thread-viewport-footer {
+  margin-top: 1rem;       /* was 0.75rem (mt-3) */
+  padding-bottom: 1.5rem; /* was 1rem (pb-4)    */
+}
+
 @layer utilities {
   .shimmer {
     background-image: linear-gradient(
