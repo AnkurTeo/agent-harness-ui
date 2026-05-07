@@ -9,7 +9,7 @@
 Reusable UI support for agentic harnesses. The first supported harness is
 OpenCode: a Vite + React implementation that makes
 [`@assistant-ui/react-opencode`](https://www.assistant-ui.com/docs/runtimes/opencode/overview)
-feel closer to an OpenCode/Codex-style agent harness.
+usable as a product-facing agent experience.
 
 It keeps the assistant-ui runtime intact and customizes only the renderer layer:
 compact tool rows, grouped explore calls, OpenCode-style markdown, session
@@ -20,11 +20,32 @@ theme by default.
 
 ## Why This Exists
 
-Agentic harnesses need more than a generic chat box. They need UI for long
-running turns, permission gates, tool output, subagent context, questions,
-reasoning, session switching, and dense markdown. This repo packages those
-surfaces as reusable React components, with OpenCode as the first concrete
-runtime target.
+Many teams already have a working agent loop: a CLI agent, an internal coding
+agent, a workflow runner, or a local harness that can plan, call tools, ask
+questions, and produce useful results. The hard part is often the product
+surface around it. End consumers need to see what the agent is doing, understand
+why it wants permissions, inspect intermediate tool output, answer blocking
+questions, and resume work across sessions.
+
+Agent Harness UI sits between a capable agent runtime and an end-user product
+experience. It does not replace the agent orchestration layer. It provides the
+browser UI primitives that make an agent presentable, debuggable, and safer to
+operate.
+
+## Use Cases
+
+- **Expose internal agents to business users:** wrap a working support,
+  operations, research, or migration agent in a browser UI with session history,
+  readable markdown, and clear next actions.
+- **Ship technical copilot experiences:** present a CLI or local harness as an
+  application surface for developers, SREs, analysts, or implementation teams.
+- **Add trust boundaries around tool use:** show permission prompts, write
+  requests, file reads, shell commands, and grouped exploration steps before an
+  agent continues.
+- **Standardize multi-agent workflows:** render subagent work, reasoning, task
+  boundaries, and follow-up questions in one consistent thread.
+- **Prototype new harness integrations:** keep runtime adapters separate from
+  renderer components so OpenCode is only the first supported backend.
 
 ## Project Status
 
@@ -67,9 +88,13 @@ Out of scope:
 
 ## Screenshots
 
-| Chat + sidebar | Markdown polish |
-| --- | --- |
-| ![Chat overview](docs/assets/app-overview.png) | ![Markdown theme](docs/assets/markdown-theme.png) |
+### Agent Harness Shell
+
+<img src="docs/assets/app-overview.png" alt="Agent Harness UI overview with sidebar, grouped tool calls, and docked composer" width="100%">
+
+### Tool Output, Permissions, and Markdown
+
+<img src="docs/assets/markdown-theme.png" alt="Agent Harness UI showing permission prompts, grouped exploration, and dense markdown output" width="100%">
 
 ## Quick Start
 
