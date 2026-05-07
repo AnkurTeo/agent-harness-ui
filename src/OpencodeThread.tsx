@@ -1,4 +1,3 @@
-import type { PropsWithChildren } from "react";
 import {
   AssistantActionBar,
   AssistantMessage,
@@ -8,26 +7,48 @@ import {
 import { MessagePrimitive } from "@assistant-ui/react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { MarkdownText } from "@/components/assistant-ui/markdown-text";
+import { Reasoning, ReasoningGroup } from "@/components/assistant-ui/reasoning";
 import { ToolFallback } from "@/components/assistant-ui/tool-fallback";
 import { ToolGroup } from "@/components/assistant-ui/tool-group";
-import { Reasoning } from "@/components/assistant-ui/reasoning";
 import { openCodeToolsByName, groupContextTools } from "./tools";
 import { StepFinish, StepStart } from "./tools/StepBoundary";
 import { DockedComposer } from "./DockedComposer";
 import { InterruptedMarker } from "./InterruptedMarker";
+import type {
+  ContextGroupProps,
+  OpenCodeComponentOverrides,
+  OpenCodeUIConfig,
+} from "./opencode-ui-config";
 
-export function OpencodeThread() {
+type OpencodeThreadProps = {
+  components?: OpenCodeComponentOverrides;
+  strings?: OpenCodeUIConfig["strings"];
+};
+
+export function OpencodeThread({ components, strings }: OpencodeThreadProps) {
+  const Composer = components?.Composer ?? DockedComposer;
+  const AssistantMessageComponent =
+    components?.AssistantMessage ??
+    function DefaultAssistantMessage() {
+      return <OpencodeAssistantMessage components={components} />;
+    };
+
   return (
     <TooltipProvider>
       <Thread
         strings={{
+          ...strings,
           composer: {
-            input: { placeholder: "Ask anything..." },
+            ...strings?.composer,
+            input: {
+              placeholder: "Ask anything...",
+              ...strings?.composer?.input,
+            },
           },
         }}
         components={{
-          AssistantMessage: OpencodeAssistantMessage,
-          Composer: DockedComposer,
+          AssistantMessage: AssistantMessageComponent,
+          Composer,
         }}
       />
     </TooltipProvider>
@@ -37,7 +58,22 @@ export function OpencodeThread() {
 // Keep react-ui's chrome (Root wrapper, Avatar) and replace ONLY the inner
 // parts renderer with Unstable_PartsGrouped so we can coalesce context tools
 // and dispatch tool-calls through our by_name map.
-function OpencodeAssistantMessage() {
+function OpencodeAssistantMessage({
+  components,
+}: {
+  components?: OpenCodeComponentOverrides;
+}) {
+  const Text = components?.MarkdownText ?? MarkdownText;
+  const ReasoningPart = components?.Reasoning ?? Reasoning;
+  const Fallback = components?.ToolFallback ?? ToolFallback;
+  const ContextGroupComponent = components?.ContextGroup ?? ContextGroup;
+  const StepStartComponent = components?.StepStart ?? StepStart;
+  const StepFinishComponent = components?.StepFinish ?? StepFinish;
+  const toolsByName = {
+    ...openCodeToolsByName,
+    ...components?.tools,
+  };
+
   return (
     <AssistantMessage.Root>
       <AssistantMessage.Avatar />
@@ -45,19 +81,19 @@ function OpencodeAssistantMessage() {
         <MessagePrimitive.Unstable_PartsGrouped
           groupingFunction={groupContextTools}
           components={{
-            Text: MarkdownText,
-            Reasoning,
+            Text,
+            Reasoning: ReasoningPart,
             tools: {
-              by_name: openCodeToolsByName,
-              Fallback: ToolFallback,
+              by_name: toolsByName,
+              Fallback,
             },
             data: {
               by_name: {
-                "opencode-step-start": StepStart,
-                "opencode-step-finish": StepFinish,
+                "opencode-step-start": StepStartComponent,
+                "opencode-step-finish": StepFinishComponent,
               },
             },
-            Group: ContextGroup,
+            Group: ContextGroupComponent,
           }}
         />
       </div>
@@ -72,11 +108,17 @@ function ContextGroup({
   groupKey,
   indices,
   children,
-}: PropsWithChildren<{
-  groupKey: string | undefined;
-  indices: number[];
-}>) {
+}: ContextGroupProps) {
   if (!groupKey || !groupKey.startsWith("context-")) {
+    if (groupKey?.startsWith("reasoning-")) {
+      const startIndex = indices[0] ?? 0;
+      const endIndex = indices[indices.length - 1] ?? startIndex;
+      return (
+        <ReasoningGroup startIndex={startIndex} endIndex={endIndex}>
+          {children}
+        </ReasoningGroup>
+      );
+    }
     return <>{children}</>;
   }
   return (

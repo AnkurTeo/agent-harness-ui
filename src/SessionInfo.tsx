@@ -15,7 +15,7 @@ export function SessionInfo() {
   return (
     <div className="text-xs text-muted-foreground">
       <span className="font-semibold">Session:</span>{" "}
-      <code className="rounded bg-white px-1 py-0.5" title={session.id}>
+      <code className="rounded bg-muted px-1 py-0.5 text-foreground" title={session.id}>
         {title}
       </code>
     </div>

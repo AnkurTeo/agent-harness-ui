@@ -1,10 +1,5 @@
-import { MyRuntimeProvider } from "./MyRuntimeProvider";
-import { Layout } from "./Layout";
+import { OpenCodeApp } from "./opencode-ui";
 
 export default function App() {
-  return (
-    <MyRuntimeProvider>
-      <Layout />
-    </MyRuntimeProvider>
-  );
+  return <OpenCodeApp />;
 }

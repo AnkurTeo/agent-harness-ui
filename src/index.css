@@ -12,6 +12,63 @@ body,
   margin: 0;
 }
 
+:root {
+  --background: 0 0% 100%;
+  --foreground: 240 10% 3.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 240 10% 3.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 240 10% 3.9%;
+  --primary: 240 5.9% 10%;
+  --primary-foreground: 0 0% 98%;
+  --secondary: 240 4.8% 95.9%;
+  --secondary-foreground: 240 5.9% 10%;
+  --muted: 240 4.8% 95.9%;
+  --muted-foreground: 240 3.8% 46.1%;
+  --accent: 240 4.8% 95.9%;
+  --accent-foreground: 240 5.9% 10%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 240 5.9% 90%;
+  --input: 240 5.9% 90%;
+  --ring: 240 10% 3.9%;
+  --oc-inline-code: 322 84% 48%;
+}
+
+.dark {
+  --background: 0 0% 7%;
+  --foreground: 0 0% 98%;
+  --card: 240 10% 3.9%;
+  --card-foreground: 0 0% 98%;
+  --popover: 240 10% 3.9%;
+  --popover-foreground: 0 0% 98%;
+  --primary: 0 0% 98%;
+  --primary-foreground: 240 5.9% 10%;
+  --secondary: 240 3.7% 15.9%;
+  --secondary-foreground: 0 0% 98%;
+  --muted: 240 3.7% 15.9%;
+  --muted-foreground: 240 5% 64.9%;
+  --accent: 240 3.7% 15.9%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 240 3.7% 15.9%;
+  --input: 240 3.7% 15.9%;
+  --ring: 240 4.9% 83.9%;
+  --oc-inline-code: 291 93% 83%;
+}
+
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+  }
+}
+
 /* Thread width + spacing overrides.
    Defaults from @assistant-ui/react-ui:
      --aui-thread-max-width: 42rem (672px)
@@ -32,22 +89,133 @@ body,
   padding-bottom: 1.5rem; /* was 1rem (pb-4)    */
 }
 
-/* Markdown theme — tighten to match OpenCode's prose density.
-   react-ui defaults bias toward marketing-site scale (h1=2.25rem, h2=1.875rem,
-   bold+tracking-tight). OpenCode uses a chat-native scale closer to the body
-   text. Override just the heading sizes/weights and list/paragraph spacing
-   so prose reads tight and scannable. */
-.aui-md-h1 { font-size: 1.25rem; line-height: 1.75rem; font-weight: 600; margin-top: 1.25rem; margin-bottom: 0.75rem; letter-spacing: 0; }
-.aui-md-h2 { font-size: 1.125rem; line-height: 1.625rem; font-weight: 600; margin-top: 1.25rem; margin-bottom: 0.5rem; letter-spacing: 0; }
-.aui-md-h3 { font-size: 1rem;     line-height: 1.5rem;   font-weight: 600; margin-top: 1rem;    margin-bottom: 0.5rem; }
+/* Tool rows + markdown tuned toward OpenCode/Codex agent harness density. */
+.oc-tool {
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.oc-tool + .oc-tool,
+.oc-tool + .aui-tool-group-root,
+.aui-tool-group-root + .oc-tool {
+  margin-top: 0.125rem;
+}
+
+.oc-tool-trigger:disabled {
+  cursor: default;
+  opacity: 1;
+}
+
+.oc-tool-error .oc-tool-title {
+  color: rgb(248 113 113);
+}
+
+.aui-reasoning-root {
+  margin-bottom: 0.25rem;
+}
+
+.aui-reasoning-text {
+  border-left: 1px solid hsl(var(--border));
+  color: hsl(var(--muted-foreground));
+  font-size: 13px;
+  line-height: 1.6;
+  scrollbar-width: none;
+}
+
+.aui-reasoning-text::-webkit-scrollbar {
+  display: none;
+}
+
+.aui-md {
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.aui-md-h1,
+.aui-md-h2,
+.aui-md-h3,
 .aui-md-h4,
 .aui-md-h5,
-.aui-md-h6 { font-size: 0.95rem; line-height: 1.5rem; font-weight: 600; margin-top: 1rem; margin-bottom: 0.5rem; }
-.aui-md-p  { margin-top: 0; margin-bottom: 0.75rem; line-height: 1.55rem; }
+.aui-md-h6 {
+  font-size: 14px;
+  line-height: 1.6;
+  font-weight: 500;
+  letter-spacing: 0;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.aui-md-p {
+  margin-top: 0;
+  margin-bottom: 12px;
+  line-height: 1.6;
+}
+
 .aui-md-ul,
-.aui-md-ol { margin-top: 0.25rem; margin-bottom: 0.75rem; padding-left: 1.25rem; }
-.aui-md-li { margin-top: 0.125rem; margin-bottom: 0.125rem; line-height: 1.5rem; }
-.aui-md-blockquote { margin-top: 0.75rem; margin-bottom: 0.75rem; padding-left: 0.75rem; border-left: 2px solid hsl(var(--border, 0 0% 90%)); color: hsl(var(--muted-foreground, 0 0% 45%)); }
+.aui-md-ol {
+  margin-top: 0;
+  margin-bottom: 12px;
+  padding-left: 32px;
+}
+
+.aui-md-li {
+  margin-top: 0;
+  margin-bottom: 8px;
+  line-height: 1.6;
+}
+
+.aui-md-li > .aui-md-p {
+  margin-bottom: 8px;
+}
+
+.aui-md-inline-code {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  border-radius: 0;
+  color: hsl(var(--oc-inline-code));
+}
+
+.aui-md-pre {
+  margin-top: 0;
+  margin-bottom: 12px;
+  border-radius: 0 0 6px 6px;
+  scrollbar-width: thin;
+}
+
+.aui-code-header-root {
+  border-radius: 6px 6px 0 0;
+}
+
+.aui-code-header-root button {
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+.aui-code-header-root:hover button,
+.aui-code-header-root:focus-within button {
+  opacity: 1;
+}
+
+.aui-md-blockquote {
+  margin-top: 12px;
+  margin-bottom: 12px;
+  padding-left: 12px;
+  border-left: 2px solid hsl(var(--border));
+  color: hsl(var(--muted-foreground));
+}
+
+.aui-md-hr {
+  margin-top: 18px;
+  margin-bottom: 18px;
+  border-color: hsl(var(--border));
+}
+
+.aui-md-table {
+  margin-top: 12px;
+  margin-bottom: 12px;
+  font-size: 13px;
+}
 
 @layer utilities {
   .shimmer {

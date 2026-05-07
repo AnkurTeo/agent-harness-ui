@@ -17,7 +17,7 @@ export class ErrorBoundary extends Component<{ children: ReactNode }, State> {
   render() {
     if (this.state.error) {
       return (
-        <div className="m-4 rounded border border-red-300 bg-red-50 p-4 font-mono text-xs text-red-900">
+        <div className="m-4 rounded border border-red-300 bg-red-50 p-4 font-mono text-xs text-red-900 dark:border-red-900/70 dark:bg-red-950/40 dark:text-red-200">
           <div className="mb-2 text-sm font-bold">Render error</div>
           <div className="mb-2 whitespace-pre-wrap break-words">
             {this.state.error.message}

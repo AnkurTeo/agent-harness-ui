@@ -66,7 +66,7 @@ function ToolFallbackRoot({
       open={isOpen}
       onOpenChange={handleOpenChange}
       className={cn(
-        "aui-tool-fallback-root group/tool-fallback-root w-full rounded-lg border py-3",
+        "aui-tool-fallback-root group/tool-fallback-root w-full py-0",
         className,
       )}
       style={
@@ -109,9 +109,11 @@ function ToolFallbackTrigger({
 
   return (
     <CollapsibleTrigger
+      type="button"
       data-slot="tool-fallback-trigger"
       className={cn(
-        "aui-tool-fallback-trigger group/trigger flex w-full items-center gap-2 px-4 text-sm transition-colors",
+        "aui-tool-fallback-trigger group/trigger flex h-8 w-full items-center gap-2 rounded-md px-0 text-sm transition-colors",
+        "text-muted-foreground hover:text-foreground focus-visible:bg-muted/50",
         className,
       )}
       {...props}
@@ -120,6 +122,7 @@ function ToolFallbackTrigger({
         data-slot="tool-fallback-trigger-icon"
         className={cn(
           "aui-tool-fallback-trigger-icon size-4 shrink-0",
+          statusType === "complete" && "text-muted-foreground",
           isCancelled && "text-muted-foreground",
           isRunning && "animate-spin",
         )}
@@ -127,12 +130,12 @@ function ToolFallbackTrigger({
       <span
         data-slot="tool-fallback-trigger-label"
         className={cn(
-          "aui-tool-fallback-trigger-label-wrapper relative inline-block grow text-start leading-none",
+          "aui-tool-fallback-trigger-label-wrapper relative inline-block min-w-0 grow truncate text-start leading-none",
           isCancelled && "text-muted-foreground line-through",
         )}
       >
         <span>
-          {label}: <b>{toolName}</b>
+          <span className="font-medium text-foreground">{toolName}</span>
         </span>
         {isRunning && (
           <span
@@ -140,14 +143,14 @@ function ToolFallbackTrigger({
             data-slot="tool-fallback-trigger-shimmer"
             className="aui-tool-fallback-trigger-shimmer shimmer pointer-events-none absolute inset-0 motion-reduce:animate-none"
           >
-            {label}: <b>{toolName}</b>
+            {label}: {toolName}
           </span>
         )}
       </span>
       <ChevronDownIcon
         data-slot="tool-fallback-trigger-chevron"
         className={cn(
-          "aui-tool-fallback-trigger-chevron size-4 shrink-0",
+          "aui-tool-fallback-trigger-chevron size-4 shrink-0 text-muted-foreground opacity-0 group-hover/trigger:opacity-100",
           "transition-transform duration-(--animation-duration) ease-out",
           "group-data-[state=closed]/trigger:-rotate-90",
           "group-data-[state=open]/trigger:rotate-0",
@@ -178,7 +181,9 @@ function ToolFallbackContent({
       )}
       {...props}
     >
-      <div className="mt-3 flex flex-col gap-2 border-t pt-2">{children}</div>
+      <div className="mt-1 flex max-h-60 flex-col gap-2 overflow-auto rounded-md border border-border/70 bg-background/70 py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {children}
+      </div>
     </CollapsibleContent>
   );
 }

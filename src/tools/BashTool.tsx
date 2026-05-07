@@ -1,8 +1,8 @@
 import { useState } from "react";
 import type { ToolCallMessagePartComponent } from "@assistant-ui/react";
-import { CopyIcon, CheckIcon } from "lucide-react";
-import { ToolFallback } from "@/components/assistant-ui/tool-fallback";
+import { CheckIcon, CopyIcon, TerminalIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { OpenCodeTool, formatToolResult, stripAnsi } from "./OpenCodeTool";
 
 type BashArgs = {
   command?: string;
@@ -17,12 +17,7 @@ export const BashTool: ToolCallMessagePartComponent = ({
   const bashArgs = (args ?? {}) as BashArgs;
   const command = bashArgs.command ?? "";
   const description = bashArgs.description ?? "";
-  const output =
-    typeof result === "string"
-      ? result
-      : result != null
-        ? JSON.stringify(result, null, 2)
-        : "";
+  const output = stripAnsi(formatToolResult(result));
 
   const [copied, setCopied] = useState(false);
   const onCopy = async () => {
@@ -36,44 +31,52 @@ export const BashTool: ToolCallMessagePartComponent = ({
     }
   };
 
-  const triggerLabel = description ? `Shell: ${description}` : "Shell";
   const isRunning = status?.type === "running";
 
   return (
-    <ToolFallback.Root defaultOpen>
-      <ToolFallback.Trigger toolName={triggerLabel} status={status} />
-      <ToolFallback.Content>
-        <div className="mx-4 rounded-md border bg-muted/40 p-3 text-xs">
-          <div className="mb-2 flex items-center justify-between gap-2">
-            <code className="truncate font-mono text-muted-foreground">
-              $ {command || "…"}
-            </code>
-            {output && (
-              <button
-                type="button"
-                onClick={onCopy}
-                className={cn(
-                  "inline-flex shrink-0 items-center gap-1 rounded px-2 py-1",
-                  "text-[11px] text-muted-foreground hover:bg-accent hover:text-accent-foreground",
-                )}
-                aria-label={copied ? "Copied" : "Copy command and output"}
-              >
-                {copied ? <CheckIcon className="size-3" /> : <CopyIcon className="size-3" />}
-                {copied ? "Copied" : "Copy"}
-              </button>
-            )}
-          </div>
-          {output ? (
-            <pre className="whitespace-pre-wrap break-words font-mono text-xs">
-              {output}
-            </pre>
-          ) : isRunning ? (
-            <div className="text-muted-foreground">Running…</div>
-          ) : (
-            <div className="text-muted-foreground italic">No output</div>
+    <OpenCodeTool
+      icon={<TerminalIcon className="size-4" />}
+      title="Shell"
+      subtitle={description || command || undefined}
+      status={status}
+      defaultOpen={Boolean(output)}
+      hideDetails={!command && !output && !isRunning}
+    >
+      <div className="relative">
+        <button
+          type="button"
+          onClick={onCopy}
+          className={cn(
+            "absolute right-2 top-2 z-10 inline-flex items-center gap-1 rounded px-2 py-1",
+            "bg-background/80 text-[11px] text-muted-foreground opacity-0 shadow-sm",
+            "transition hover:bg-accent hover:text-accent-foreground group-hover/oc-tool:opacity-100",
           )}
+          aria-label={copied ? "Copied" : "Copy command and output"}
+        >
+          {copied ? (
+            <CheckIcon className="size-3" />
+          ) : (
+            <CopyIcon className="size-3" />
+          )}
+          {copied ? "Copied" : "Copy"}
+        </button>
+        <div className="border-b border-border/60 px-3 py-2 pr-20">
+          <code className="whitespace-pre-wrap break-words font-mono text-[13px] text-muted-foreground">
+            $ {command || "..."}
+          </code>
         </div>
-      </ToolFallback.Content>
-    </ToolFallback.Root>
+        {output ? (
+          <pre className="whitespace-pre-wrap break-words p-3 font-mono text-[13px] leading-6 text-foreground">
+            {output}
+          </pre>
+        ) : isRunning ? (
+          <div className="p-3 text-sm text-muted-foreground">Running...</div>
+        ) : (
+          <div className="p-3 text-sm italic text-muted-foreground">
+            No output
+          </div>
+        )}
+      </div>
+    </OpenCodeTool>
   );
 };

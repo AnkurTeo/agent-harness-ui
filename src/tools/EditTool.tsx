@@ -1,6 +1,7 @@
 import type { ToolCallMessagePartComponent } from "@assistant-ui/react";
-import { ToolFallback } from "@/components/assistant-ui/tool-fallback";
+import { FilePenIcon } from "lucide-react";
 import { DiffViewer } from "@/components/assistant-ui/diff-viewer";
+import { OpenCodeTool } from "./OpenCodeTool";
 
 type EditArgs = {
   filePath?: string;
@@ -40,6 +41,16 @@ function extractFilePath(
   return args.filePath ?? args.path ?? args.file_path ?? "file";
 }
 
+function filename(path: string): string {
+  const parts = path.split(/[\\/]/).filter(Boolean);
+  return parts.length > 0 ? parts[parts.length - 1] : path;
+}
+
+function dirname(path: string): string {
+  const index = Math.max(path.lastIndexOf("/"), path.lastIndexOf("\\"));
+  return index >= 0 ? path.slice(0, index) : "";
+}
+
 export const EditTool: ToolCallMessagePartComponent = ({
   toolName,
   args,
@@ -59,24 +70,28 @@ export const EditTool: ToolCallMessagePartComponent = ({
       : toolName === "apply_patch"
         ? "Apply patch"
         : "Edit";
-  const triggerLabel = `${verb}: ${filePath}`;
-
   return (
-    <ToolFallback.Root defaultOpen>
-      <ToolFallback.Trigger toolName={triggerLabel} status={status} />
-      <ToolFallback.Content>
-        <div className="mx-4">
-          {patch ? (
-            <DiffViewer patch={patch} viewMode="unified" showLineNumbers />
-          ) : isRunning ? (
-            <div className="text-xs text-muted-foreground">Applying edits…</div>
-          ) : (
-            <div className="text-xs text-muted-foreground italic">
-              No diff available.
-            </div>
-          )}
-        </div>
-      </ToolFallback.Content>
-    </ToolFallback.Root>
+    <OpenCodeTool
+      icon={<FilePenIcon className="size-4" />}
+      title={verb}
+      subtitle={filename(filePath)}
+      args={[dirname(filePath)].filter(Boolean)}
+      status={status}
+      defaultOpen={Boolean(patch)}
+      hideDetails={!patch && !isRunning}
+      contentClassName="max-h-[28rem]"
+    >
+      <div className="p-3">
+        {patch ? (
+          <DiffViewer patch={patch} viewMode="unified" showLineNumbers />
+        ) : isRunning ? (
+          <div className="text-sm text-muted-foreground">Applying edits...</div>
+        ) : (
+          <div className="text-sm italic text-muted-foreground">
+            No diff available.
+          </div>
+        )}
+      </div>
+    </OpenCodeTool>
   );
 };

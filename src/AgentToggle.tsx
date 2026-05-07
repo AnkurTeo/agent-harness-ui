@@ -38,12 +38,12 @@ export function AgentToggle() {
             <span className="capitalize">{valueText}</span>
           </SelectValue>
         </SelectTrigger>
-        <SelectContent className="bg-white text-neutral-900 border-neutral-200 shadow-md">
+        <SelectContent className="border-border bg-popover text-popover-foreground shadow-md">
           {agents.map((a) => (
             <SelectItem
               key={a.name}
               value={a.name}
-              className="capitalize data-[highlighted]:bg-neutral-100"
+              className="capitalize data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground"
             >
               {a.name}
             </SelectItem>

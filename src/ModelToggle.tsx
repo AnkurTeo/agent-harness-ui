@@ -67,7 +67,7 @@ export function ModelToggle() {
           size="sm"
           className="h-7 w-44 text-xs"
         />
-        <ModelSelector.Content className="bg-white text-neutral-900 border-neutral-200 shadow-md">
+        <ModelSelector.Content className="border-border bg-popover text-popover-foreground shadow-md">
           {providers.map((p) => (
             <SelectGroup key={p.id}>
               <SelectLabel className="text-muted-foreground px-3 py-1 text-[10px] uppercase tracking-wide">
@@ -77,7 +77,7 @@ export function ModelToggle() {
                 <ModelSelector.Item
                   key={`${p.id}/${m.id}`}
                   model={{ id: `${p.id}/${m.id}`, name: m.name }}
-                  className="data-[highlighted]:bg-neutral-100"
+                  className="data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground"
                 />
               ))}
             </SelectGroup>

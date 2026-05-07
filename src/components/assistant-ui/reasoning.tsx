@@ -125,13 +125,14 @@ function ReasoningTrigger({
   active?: boolean;
   duration?: number;
 }) {
-  const durationText = duration ? ` (${duration}s)` : "";
+  const durationText = duration ? ` ${duration}s` : "";
 
   return (
     <CollapsibleTrigger
+      type="button"
       data-slot="reasoning-trigger"
       className={cn(
-        "aui-reasoning-trigger group/trigger flex max-w-[75%] items-center gap-2 py-1 text-muted-foreground text-sm transition-colors hover:text-foreground",
+        "aui-reasoning-trigger group/trigger flex h-8 max-w-full items-center gap-2 rounded-md py-1 text-muted-foreground text-sm transition-colors hover:text-foreground",
         className,
       )}
       {...props}
@@ -144,14 +145,14 @@ function ReasoningTrigger({
         data-slot="reasoning-trigger-label"
         className="aui-reasoning-trigger-label-wrapper relative inline-block leading-none"
       >
-        <span>Reasoning{durationText}</span>
+        <span>Thinking{durationText}</span>
         {active ? (
           <span
             aria-hidden
             data-slot="reasoning-trigger-shimmer"
             className="aui-reasoning-trigger-shimmer shimmer pointer-events-none absolute inset-0 motion-reduce:animate-none"
           >
-            Reasoning{durationText}
+            Thinking{durationText}
           </span>
         ) : null}
       </span>
@@ -234,7 +235,7 @@ const ReasoningGroupImpl: ReasoningGroupComponent = ({
   });
 
   return (
-    <ReasoningRoot defaultOpen={isReasoningStreaming}>
+    <ReasoningRoot variant="ghost" defaultOpen={isReasoningStreaming}>
       <ReasoningTrigger active={isReasoningStreaming} />
       <ReasoningContent aria-busy={isReasoningStreaming}>
         <ReasoningText>{children}</ReasoningText>

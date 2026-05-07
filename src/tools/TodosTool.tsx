@@ -1,7 +1,13 @@
 import type { ToolCallMessagePartComponent } from "@assistant-ui/react";
-import { CheckIcon, CircleDashedIcon, CircleIcon, XIcon } from "lucide-react";
-import { ToolFallback } from "@/components/assistant-ui/tool-fallback";
+import {
+  CheckIcon,
+  CircleDashedIcon,
+  CircleIcon,
+  ListTodoIcon,
+  XIcon,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
+import { OpenCodeTool } from "./OpenCodeTool";
 
 type TodoStatus = "pending" | "in_progress" | "completed" | "cancelled";
 type TodoItem = {
@@ -56,35 +62,41 @@ export const TodosTool: ToolCallMessagePartComponent = ({
     total === 0 ? "Todos" : `${completed} of ${total} todos completed`;
 
   return (
-    <ToolFallback.Root defaultOpen>
-      <ToolFallback.Trigger toolName={header} status={status} />
-      <ToolFallback.Content>
-        <div className="mx-4">
-          {todos.length === 0 ? (
-            <div className="text-xs italic text-muted-foreground">
-              (empty list)
-            </div>
-          ) : (
-            <ul className="flex flex-col gap-1 text-sm">
-              {todos.map((t, i) => (
-                <li
-                  key={i}
-                  className={cn(
-                    "flex items-start gap-2",
-                    t.status === "completed" && "line-through text-muted-foreground",
-                    t.status === "cancelled" && "line-through text-muted-foreground opacity-70",
-                  )}
-                >
-                  <span className="mt-0.5 shrink-0">
-                    <StatusIcon status={t.status} />
-                  </span>
-                  <span className="min-w-0 break-words">{t.content}</span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      </ToolFallback.Content>
-    </ToolFallback.Root>
+    <OpenCodeTool
+      icon={<ListTodoIcon className="size-4" />}
+      title="Todos"
+      subtitle={total === 0 ? undefined : header}
+      status={status}
+      defaultOpen
+      hideDetails={todos.length === 0}
+    >
+      <div className="p-3">
+        {todos.length === 0 ? (
+          <div className="text-xs italic text-muted-foreground">
+            (empty list)
+          </div>
+        ) : (
+          <ul className="flex flex-col gap-1.5 text-sm">
+            {todos.map((t, i) => (
+              <li
+                key={i}
+                className={cn(
+                  "flex items-start gap-2",
+                  t.status === "completed" &&
+                    "line-through text-muted-foreground",
+                  t.status === "cancelled" &&
+                    "line-through text-muted-foreground opacity-70",
+                )}
+              >
+                <span className="mt-0.5 shrink-0">
+                  <StatusIcon status={t.status} />
+                </span>
+                <span className="min-w-0 break-words">{t.content}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </OpenCodeTool>
   );
 };

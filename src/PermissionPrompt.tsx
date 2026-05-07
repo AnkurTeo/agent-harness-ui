@@ -6,19 +6,19 @@ export function PermissionPrompt() {
   if (!pending.length) return null;
 
   return (
-    <div className="border-t bg-amber-50 p-3">
-      <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-amber-800">
+    <div className="border-t bg-amber-50 p-3 dark:border-amber-900/50 dark:bg-amber-950/30">
+      <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-amber-800 dark:text-amber-200">
         Permission requested
       </div>
       <div className="space-y-2">
         {pending.map((req) => (
           <div
             key={req.id}
-            className="flex flex-wrap items-center gap-2 rounded border border-amber-200 bg-white p-2 text-sm"
+            className="flex flex-wrap items-center gap-2 rounded border border-amber-200 bg-white p-2 text-sm dark:border-amber-900/60 dark:bg-background"
           >
             <p className="min-w-0 flex-1">
               Allow{" "}
-              <code className="rounded bg-gray-100 px-1">
+              <code className="rounded bg-gray-100 px-1 dark:bg-muted">
                 {req.toolName ?? "tool"}
               </code>
               : {req.title ?? req.permission}?

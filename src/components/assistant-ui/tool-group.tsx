@@ -8,7 +8,7 @@ import {
   type FC,
   type PropsWithChildren,
 } from "react";
-import { ChevronDownIcon, LoaderIcon } from "lucide-react";
+import { ChevronDownIcon, LoaderIcon, SearchIcon } from "lucide-react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { useScrollLock } from "@assistant-ui/react";
 import {
@@ -23,9 +23,9 @@ const ANIMATION_DURATION = 200;
 const toolGroupVariants = cva("aui-tool-group-root group/tool-group w-full", {
   variants: {
     variant: {
-      outline: "rounded-lg border py-3",
+      outline: "py-0",
       ghost: "",
-      muted: "rounded-lg border border-muted-foreground/30 bg-muted/30 py-3",
+      muted: "py-0",
     },
   },
   defaultVariants: { variant: "outline" },
@@ -103,34 +103,36 @@ function ToolGroupTrigger({
   count: number;
   active?: boolean;
 }) {
-  const label = `${count} tool ${count === 1 ? "call" : "calls"}`;
+  const label = active ? "Exploring" : "Explored";
+  const summary = `${count} ${count === 1 ? "call" : "calls"}`;
 
   return (
     <CollapsibleTrigger
+      type="button"
       data-slot="tool-group-trigger"
       className={cn(
-        "aui-tool-group-trigger group/trigger flex items-center gap-2 text-sm transition-colors",
-        "group-data-[variant=outline]/tool-group-root:w-full group-data-[variant=outline]/tool-group-root:px-4",
-        "group-data-[variant=muted]/tool-group-root:w-full group-data-[variant=muted]/tool-group-root:px-4",
+        "aui-tool-group-trigger group/trigger flex h-8 w-full items-center gap-2 rounded-md px-0 text-sm transition-colors",
+        "text-muted-foreground hover:text-foreground focus-visible:bg-muted/50",
         className,
       )}
       {...props}
     >
-      {active && (
+      {active ? (
         <LoaderIcon
           data-slot="tool-group-trigger-loader"
           className="aui-tool-group-trigger-loader size-4 shrink-0 animate-spin"
         />
+      ) : (
+        <SearchIcon className="size-4 shrink-0 text-muted-foreground" />
       )}
       <span
         data-slot="tool-group-trigger-label"
         className={cn(
-          "aui-tool-group-trigger-label-wrapper relative inline-block text-start font-medium leading-none",
-          "group-data-[variant=outline]/tool-group-root:grow",
-          "group-data-[variant=muted]/tool-group-root:grow",
+          "aui-tool-group-trigger-label-wrapper relative inline-flex min-w-0 grow items-baseline gap-2 overflow-hidden text-start leading-none",
         )}
       >
-        <span>{label}</span>
+        <span className="shrink-0 font-medium text-foreground">{label}</span>
+        <span className="truncate text-muted-foreground">{summary}</span>
         {active && (
           <span
             aria-hidden
@@ -144,7 +146,7 @@ function ToolGroupTrigger({
       <ChevronDownIcon
         data-slot="tool-group-trigger-chevron"
         className={cn(
-          "aui-tool-group-trigger-chevron size-4 shrink-0",
+          "aui-tool-group-trigger-chevron size-4 shrink-0 text-muted-foreground opacity-0 group-hover/trigger:opacity-100",
           "transition-transform duration-(--animation-duration) ease-out",
           "group-data-[state=closed]/trigger:-rotate-90",
           "group-data-[state=open]/trigger:rotate-0",
@@ -177,9 +179,7 @@ function ToolGroupContent({
     >
       <div
         className={cn(
-          "mt-2 flex flex-col gap-2",
-          "group-data-[variant=outline]/tool-group-root:mt-3 group-data-[variant=outline]/tool-group-root:border-t group-data-[variant=outline]/tool-group-root:px-4 group-data-[variant=outline]/tool-group-root:pt-3",
-          "group-data-[variant=muted]/tool-group-root:mt-3 group-data-[variant=muted]/tool-group-root:border-t group-data-[variant=muted]/tool-group-root:px-4 group-data-[variant=muted]/tool-group-root:pt-3",
+          "mt-1 flex flex-col gap-1 border-l border-border/70 pl-6",
         )}
       >
         {children}

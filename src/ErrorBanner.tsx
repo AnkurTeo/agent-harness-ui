@@ -44,7 +44,7 @@ export function ErrorBanner() {
       : describeError(lastMessageError);
 
   return (
-    <div className="border-t border-red-300 bg-red-50 p-3 text-sm text-red-900">
+    <div className="border-t border-red-300 bg-red-50 p-3 text-sm text-red-900 dark:border-red-900/70 dark:bg-red-950/40 dark:text-red-200">
       <span className="font-semibold">{label}</span> {message}
     </div>
   );

@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: assistant-ui OpenCode runtime docs
+    url: https://www.assistant-ui.com/docs/runtimes/opencode/overview
+    about: Runtime behavior and upstream assistant-ui integration details.

@@ -19,6 +19,17 @@ export function groupContextTools(
   const groups: MessagePartGroup[] = [];
   let i = 0;
   while (i < parts.length) {
+    if (parts[i]?.type === "reasoning") {
+      const start = i;
+      const indices: number[] = [];
+      while (i < parts.length && parts[i]?.type === "reasoning") {
+        indices.push(i);
+        i++;
+      }
+      groups.push({ groupKey: `reasoning-${start}`, indices });
+      continue;
+    }
+
     if (isContextTool(parts[i])) {
       const start = i;
       const indices: number[] = [];

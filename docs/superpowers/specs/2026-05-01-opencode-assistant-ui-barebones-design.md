@@ -1,7 +1,7 @@
-# assistant-ui + OpenCode barebones integration sample — design
+# assistant-ui + OpenCode barebones integration sample - design
 
 - **Date:** 2026-05-01
-- **Location:** `/Users/ankurteotia/Desktop/assistant-ui-opencode-sample/`
+- **Location:** standalone `agent-harness-ui` repository
 - **Status:** design approved, ready for implementation plan
 
 ## Goal
@@ -62,7 +62,7 @@ server this project doesn't need.
 ## File layout
 
 ```
-assistant-ui-opencode-sample/
+agent-harness-ui/
   index.html
   package.json
   tsconfig.json
@@ -161,7 +161,7 @@ sequenceDiagram
 opencode serve                      # listens on 127.0.0.1:4096 by default
 
 # terminal 2
-cd /Users/ankurteotia/Desktop/assistant-ui-opencode-sample
+cd agent-harness-ui
 cp .env.example .env                # optional — only if overriding the URL
 npm install
 npm run dev                         # Vite serves http://localhost:5173

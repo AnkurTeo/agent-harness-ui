@@ -1,13 +1,36 @@
 {
-  "name": "assistant-ui-opencode-sample",
+  "name": "agent-harness-ui",
   "private": true,
   "version": "0.1.0",
+  "description": "Reusable UI support for agentic harnesses, starting with an OpenCode assistant-ui implementation.",
+  "license": "MIT",
   "type": "module",
+  "homepage": "https://github.com/AnkurTeo/agent-harness-ui#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AnkurTeo/agent-harness-ui.git"
+  },
+  "bugs": {
+    "url": "https://github.com/AnkurTeo/agent-harness-ui/issues"
+  },
+  "engines": {
+    "node": ">=18.18"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "typecheck": "tsc -b",
     "preview": "vite preview"
   },
+  "keywords": [
+    "assistant-ui",
+    "opencode",
+    "agentic-harness",
+    "agent-ui",
+    "coding-agent",
+    "react",
+    "vite"
+  ],
   "dependencies": {
     "@assistant-ui/react": "^0.12.28",
     "@assistant-ui/react-markdown": "^0.12.11",

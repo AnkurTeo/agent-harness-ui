@@ -1,5 +1,6 @@
 import type { ToolCallMessagePartComponent } from "@assistant-ui/react";
-import { ToolFallback } from "@/components/assistant-ui/tool-fallback";
+import { BotIcon } from "lucide-react";
+import { OpenCodeTool } from "./OpenCodeTool";
 
 type TaskArgs = {
   subagent_type?: string;
@@ -40,34 +41,33 @@ export const TaskTool: ToolCallMessagePartComponent = ({
         ? taskResult.summary
         : "";
 
-  const triggerLabel = `Task: ${agent}`;
-
   return (
-    <ToolFallback.Root defaultOpen>
-      <ToolFallback.Trigger toolName={triggerLabel} status={status} />
-      <ToolFallback.Content>
-        <div className="mx-4 space-y-2 text-xs">
-          <div className="flex items-center gap-2">
-            <span
-              aria-hidden
-              className="inline-block size-2 rounded-full"
-              style={{ backgroundColor: hashColor(agent) }}
-            />
-            <span className="font-medium">{agent}</span>
-            {isRunning && (
-              <span className="text-muted-foreground">· running…</span>
-            )}
-          </div>
-          {description && (
-            <p className="text-muted-foreground">{description}</p>
-          )}
-          {!isRunning && summary && (
-            <pre className="whitespace-pre-wrap break-words font-mono text-[11px]">
-              {summary}
-            </pre>
-          )}
+    <OpenCodeTool
+      icon={<BotIcon className="size-4" />}
+      title="Task"
+      subtitle={agent}
+      args={description ? [description] : []}
+      status={status}
+      defaultOpen={Boolean(summary)}
+      hideDetails={!summary && !isRunning}
+    >
+      <div className="space-y-2 p-3 text-sm">
+        <div className="flex items-center gap-2">
+          <span
+            aria-hidden
+            className="inline-block size-2 rounded-full"
+            style={{ backgroundColor: hashColor(agent) }}
+          />
+          <span className="font-medium">{agent}</span>
+          {isRunning && <span className="text-muted-foreground">running...</span>}
         </div>
-      </ToolFallback.Content>
-    </ToolFallback.Root>
+        {description && <p className="text-muted-foreground">{description}</p>}
+        {!isRunning && summary && (
+          <pre className="whitespace-pre-wrap break-words font-mono text-[13px] leading-6">
+            {summary}
+          </pre>
+        )}
+      </div>
+    </OpenCodeTool>
   );
 };

@@ -1,127 +1,213 @@
-# assistant-ui + OpenCode — barebones integration sample
+# assistant-ui Agent Harness UI
 
-Smallest working POC that drives a local `opencode serve` instance with the
+[![CI](https://github.com/AnkurTeo/agent-harness-ui/actions/workflows/ci.yml/badge.svg)](https://github.com/AnkurTeo/agent-harness-ui/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![React](https://img.shields.io/badge/React-19-61dafb.svg)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-5-646cff.svg)](https://vite.dev/)
+[![OpenCode](https://img.shields.io/badge/Harness-OpenCode-black.svg)](https://opencode.ai/)
+
+Reusable UI support for agentic harnesses. The first supported harness is
+OpenCode: a Vite + React implementation that makes
 [`@assistant-ui/react-opencode`](https://www.assistant-ui.com/docs/runtimes/opencode/overview)
-runtime. No server, no framework boilerplate — pure Vite SPA talking directly
-to `http://127.0.0.1:4096`.
+feel closer to an OpenCode/Codex-style agent harness.
 
-Spec: `docs/superpowers/specs/2026-05-01-opencode-assistant-ui-barebones-design.md`
+It keeps the assistant-ui runtime intact and customizes only the renderer layer:
+compact tool rows, grouped explore calls, OpenCode-style markdown, session
+titles, model/agent selectors, permission prompts, question prompts, and a dark
+theme by default.
 
-## What's wired up
+![App overview](docs/assets/app-overview.png)
 
-All four critical hooks from the runtime docs:
+## Why This Exists
 
-| Hook | Component | Purpose |
-| --- | --- | --- |
-| `useOpenCodeRuntime` | `src/MyRuntimeProvider.tsx` | Creates the runtime + `AssistantRuntimeProvider`. |
-| `useOpenCodeSession` | `src/SessionInfo.tsx` | Shows the live session id (debug aid). |
-| `useOpenCodePermissions` | `src/PermissionPrompt.tsx` | Approve/reject tool permission requests. |
-| `useOpenCodeQuestions` + `useOpenCodeRuntimeExtras` | `src/QuestionPrompt.tsx` | Answer or skip agent-asked questions. |
+Agentic harnesses need more than a generic chat box. They need UI for long
+running turns, permission gates, tool output, subagent context, questions,
+reasoning, session switching, and dense markdown. This repo packages those
+surfaces as reusable React components, with OpenCode as the first concrete
+runtime target.
 
-Chat UI is the prebuilt `Thread` from `@assistant-ui/react-ui`.
+## Project Status
 
-## Run it
+This repo is intentionally narrow right now: polish the agent-chat UI surface
+for OpenCode first, then keep the component seams reusable for future harnesses.
+`@assistant-ui/react-opencode` is still experimental and pinned to `0.0.3`, so
+runtime compatibility may need updates as upstream APIs change.
 
-Two terminals.
+## Features
+
+- Direct browser client for `opencode serve`.
+- Dark theme with overridable CSS tokens.
+- Server-side OpenCode session title in the thread header.
+- Docked composer with OpenCode questions, permission prompts, model selector,
+  and agent selector.
+- Collapsible `Thinking` bubbles for reasoning parts, closed by default after
+  completion.
+- OpenCode-style question prompt with numbered steps, Back/Next, and one final
+  submit for multi-question requests.
+- Compact tool UI for shell, explore, web, todo, edit, patch, write, and task
+  calls.
+- Adjacent `read/list/glob/grep` calls grouped as `Explored` / `Exploring`.
+- Markdown tuned for agent-chat density instead of marketing-page typography.
+- Public `OpenCodeApp` wrapper for component and theme overrides.
+
+## Scope
+
+In scope:
+
+- Reusable React components for agent harness chrome, prompts, tool calls, and
+  markdown.
+- OpenCode integration through the public assistant-ui OpenCode runtime.
+- Documentation for customization and renderer contracts.
+
+Out of scope:
+
+- Forking assistant-ui runtime internals.
+- Backend orchestration for agents.
+- Product-specific workflows that make the UI harder to reuse across harnesses.
+
+## Screenshots
+
+| Chat + sidebar | Markdown polish |
+| --- | --- |
+| ![Chat overview](docs/assets/app-overview.png) | ![Markdown theme](docs/assets/markdown-theme.png) |
+
+## Quick Start
+
+Run OpenCode and the Vite app in two terminals.
 
 ```bash
-# terminal 1 — OpenCode server
+# terminal 1
 opencode serve
-# → listens on http://127.0.0.1:4096
 
-# terminal 2 — Vite dev server
-cd /Users/ankurteotia/Desktop/assistant-ui-opencode-sample
+# terminal 2
 npm install
 npm run dev
-# → opens http://localhost:5173
 ```
 
-Type a message in the composer. Confirm a reply streams in, the session id
-appears in the top strip, and any tool call surfaces a permission prompt at
-the bottom.
+Open `http://localhost:5173`.
 
-### Custom OpenCode URL
+The app expects OpenCode at `http://127.0.0.1:4096`. To change that:
 
-Copy `.env.example` → `.env` and set `VITE_OPENCODE_URL=http://host:port`.
-Default is `http://127.0.0.1:4096`.
+```bash
+cp .env.example .env
+```
 
-## Versions
+Then edit:
 
-`@assistant-ui/react-opencode` is **v0.0.3 and marked experimental** — the
-API may change without notice. `package.json` pins the exact version so this
-POC doesn't drift.
+```bash
+VITE_OPENCODE_URL=http://127.0.0.1:4096
+```
 
-| Package | Version |
+## OpenCode Components Included
+
+| Area | Components |
 | --- | --- |
-| `@assistant-ui/react` | `^0.12.26` |
-| `@assistant-ui/react-ui` | `^0.2.1` |
-| `@assistant-ui/react-opencode` | `0.0.3` (pinned) |
-| `@opencode-ai/sdk` | `^1.14.20` |
+| Runtime shell | `OpenCodeApp`, `MyRuntimeProvider`, `Layout`, `OpencodeThread` |
+| Composer | `DockedComposer`, `QuestionPrompt`, `PermissionPrompt`, `ModelToggle`, `AgentToggle` |
+| Thread chrome | `ThreadHeader`, `SessionInfo`, `ThreadList`, `InterruptedMarker` |
+| Thinking | `Reasoning`, `ReasoningGroup`, `ReasoningTrigger`, `ReasoningContent` |
+| Tool primitive | `OpenCodeTool`, `ToolGroup`, `ToolFallback` |
+| Tool renderers | `BashTool`, `ReadTool`, `ListTool`, `GlobTool`, `GrepTool`, `WebFetchTool`, `WebSearchTool`, `TodosTool`, `EditTool`, `TaskTool` |
+| Markdown | `MarkdownText`, code copy header, GFM tables/lists/blockquote styling |
+
+See [docs/components.md](docs/components.md) for the full component map.
+
+## Override Theme and Components
+
+```tsx
+import { OpenCodeApp, BashTool } from "./opencode-ui";
+
+export default function App() {
+  return (
+    <OpenCodeApp
+      theme={{
+        mode: "dark",
+        variables: {
+          "oc-inline-code": "291 93% 83%",
+        },
+      }}
+      components={{
+        tools: {
+          bash: BashTool,
+        },
+      }}
+      strings={{
+        composer: {
+          input: {
+            placeholder: "Ask your agent...",
+          },
+        },
+      }}
+    />
+  );
+}
+```
+
+Supported overrides include the composer, assistant message renderer, markdown
+renderer, sidebar pieces, context group, unknown tool fallback, and per-tool
+renderers. See [docs/customization.md](docs/customization.md).
+
+## Tool Renderer Contract
+
+Tool renderers intentionally use only the projected assistant-ui OpenCode props:
+
+- `toolName`
+- `args`
+- `argsText`
+- `result`
+- `status`
+- `toolCallId`
+
+Do not depend on raw OpenCode metadata in UI components. If richer metadata is
+needed, add a small projection adapter upstream instead of scraping hidden
+runtime state.
+
+## Scripts
+
+```bash
+npm run dev       # Vite dev server
+npm run typecheck # TypeScript project build
+npm run build     # Typecheck + production build
+npm run preview   # Serve production build locally
+```
+
+## Repository Hygiene
+
+- Runtime configuration lives in `.env`; copy `.env.example` when needed.
+- Generated output such as `dist/`, `node_modules/`, `.DS_Store`, and
+  TypeScript build info is ignored.
+- Local Codex/agent skill folders under `.agents/` are ignored and should not be
+  committed with the sample app.
 
 ## Troubleshooting
 
-### CORS rejection (Chrome console shows blocked preflight / SSE)
+### CORS Rejection
 
-`opencode serve` needs to accept cross-origin requests from
-`http://localhost:5173`. If the default config rejects them, add a Vite dev
-proxy:
+If the browser blocks OpenCode requests, either configure OpenCode to accept
+`http://localhost:5173` or proxy through Vite and set `VITE_OPENCODE_URL` to the
+proxy path.
 
-```ts
-// vite.config.ts
-export default defineConfig({
-  plugins: [react()],
-  server: {
-    proxy: {
-      "/opencode": {
-        target: "http://127.0.0.1:4096",
-        changeOrigin: true,
-        ws: true,
-        rewrite: (p) => p.replace(/^\/opencode/, ""),
-      },
-    },
-  },
-});
+### No Reply Streams In
+
+Check that `opencode serve` is running:
+
+```bash
+curl http://127.0.0.1:4096/config
 ```
 
-Then set `VITE_OPENCODE_URL=/opencode` in `.env` so the runtime hits
-same-origin and the proxy forwards.
+The sample intentionally disables React StrictMode because
+`@assistant-ui/react-opencode@0.0.3` can dispose its shared event source during
+StrictMode remounts.
 
-### "No session yet" never goes away
+### Tool UI Looks Like Raw JSON
 
-The SSE stream didn't attach. Check the browser Network tab for a failing
-request to `/event` or `/session` on port 4096. Most common cause is the
-OpenCode server isn't actually listening on `127.0.0.1:4096` — try
-`curl http://127.0.0.1:4096/config` in a third terminal.
+Confirm the tool name exists in `openCodeToolsByName` in `src/tools/index.ts`.
+Unknown tools fall back to `ToolFallback`.
 
-### Permission prompt never appears, tool call hangs
+## Contributing
 
-The permission prompt only shows tools that require approval. If you're
-testing with a prompt that OpenCode auto-approves, you won't see the UI —
-that's correct behavior. Force it with a write-like prompt (e.g. "create a
-file named hello.txt with body world").
+See [CONTRIBUTING.md](CONTRIBUTING.md).
 
-### `Thread` renders unstyled
+## License
 
-Tailwind isn't picking up the react-ui classes. Verify
-`tailwind.config.ts`'s `content` array includes
-`./node_modules/@assistant-ui/react-ui/dist/**/*.{js,mjs}`.
-
-## File layout
-
-```
-src/
-  main.tsx               React root
-  App.tsx                <MyRuntimeProvider><Layout/></MyRuntimeProvider>
-  MyRuntimeProvider.tsx  useOpenCodeRuntime + AssistantRuntimeProvider
-  Layout.tsx             SessionInfo / Thread / QuestionPrompt / PermissionPrompt
-  PermissionPrompt.tsx   useOpenCodePermissions
-  QuestionPrompt.tsx     useOpenCodeQuestions + useOpenCodeRuntimeExtras
-  SessionInfo.tsx        useOpenCodeSession
-  index.css              Tailwind + assistant-ui styles
-```
-
-## References
-
-- Overview: https://www.assistant-ui.com/docs/runtimes/opencode/overview
-- Quickstart: https://www.assistant-ui.com/docs/runtimes/opencode/quickstart
-- Hooks: https://www.assistant-ui.com/docs/runtimes/opencode/hooks
+MIT. See [LICENSE](LICENSE).
